@@ -1,0 +1,37 @@
+#!/bin/sh
+# Copyright 2011-2016 Christian Dywan <christian@twotoasts.de>
+#
+# This script is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+#~  oman: Read manpages from the web on your local machine
+#~
+#~  Manpages provided by http://man.he.net/
+#~
+#~  Usage:
+#~    oman [PAGE]
+#~
+#~  Usage examples:
+#~  - oman ls
+#~
+#~  Bugs:
+#~    No support for sections.
+
+PAGE=$1
+if [ -n "$PAGE" ]; then
+    URL="http://man.he.net/?section=all&topic=$PAGE"
+    test -z "$TEMPDIR" && TEMPDIR=/tmp
+    FOLDER=$TEMPDIR/$(basename $0)
+    mkdir -p $FOLDER
+    WGETRC=$FOLDER/wgetrc
+    touch $WGETRC
+    FILE=$FOLDER/$PAGE
+    test -f $FILE || wget --config=$WGETRC -qO - $URL -O $FILE || exit 1
+    B=$(printf '\033[1m')
+    N=$(printf '\033[0m')
+    sed -e 's/<[^>]*>//g' -r -e "s/^\b([A-Z ]{2,})\b$/${B}\\1${N}/g" $FILE | less -qRs
+else
+    grep -e '^#~' $0 | sed s/#~//
+fi
