@@ -1,0 +1,27 @@
+name: oman
+version: 0.1
+summary: Read manpages from the web on your local machine
+description: |
+    Manpages provided by http://man.he.net/
+
+    See https://bugs.launchpad.net/snappy/+bug/1575593
+confinement: strict
+
+apps:
+    oman:
+        command: oman
+        plugs: [network-bind]
+
+parts:
+    oman:
+        plugin: dump
+        source: .
+        snap:
+            - oman
+    tools:
+        plugin: nil
+        stage-packages:
+            - wget
+        snap:
+            - usr/bin/wget
+            - usr/lib
